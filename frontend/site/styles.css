@@ -1,11 +1,9 @@
-/* styles.css — estilos kawaii para el blog de gatitos */
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
 body {
     font-family: 'Quicksand', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-/* Estilos para el contenido markdown renderizado */
 #blog-content-md h1 {
     font-size: 1.8rem;
     font-weight: 700;
@@ -73,12 +71,10 @@ body {
     }
 }
 
-/* Efecto paw print (huellitas) */
 .bg-gradient-to-b {
     background-attachment: fixed;
 }
 
-/* Scrollbar kawaii */
 ::-webkit-scrollbar {
     width: 8px;
 }

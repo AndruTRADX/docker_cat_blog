@@ -6,7 +6,6 @@ CORS(app)
 
 @app.route('/getCatsInfo')
 def getCatsInfo():
-    # Contenido en markdown sobre gatos
     content = """# Felis catus
 El gato doméstico (Felis catus, también Felis silvestris catus), llamado comúnmente gato, y de forma coloquial minino, michino o michi, y algunos nombres más, es un mamífero carnívoro de la familia Felidae (también conocida como "felina").
 
