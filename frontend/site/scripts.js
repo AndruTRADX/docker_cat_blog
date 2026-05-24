@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const contentElement = document.getElementById("blog-content-md");
 
     try {
-        const response = await fetch("http://localhost:5000/getCatsInfo");
+        const response = await fetch("/getCatsInfo");
         
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);

@@ -1,12 +1,8 @@
-version: "3.8"
-
 services:
   back:
     build: ./backend
     image: backend:latest
     container_name: back
-    ports:
-      - "5000:5000"
     networks:
       - red-gatos
 
