@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  back:
+    build: ./backend
+    image: backend:latest
+    container_name: back
+    ports:
+      - "5000:5000"
+    networks:
+      - red-gatos
+
+  web:
+    build: ./frontend
+    image: website:latest
+    container_name: web
+    ports:
+      - "8080:80"
+    networks:
+      - red-gatos
+    depends_on:
+      - back
+
+networks:
+  red-gatos:
+    driver: bridge

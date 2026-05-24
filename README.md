@@ -75,3 +75,27 @@ Por último, abre en tu navegador:
 [http://localhost:8080](http://localhost:8080/)
 
 ¡Y listo! Lograste comunicar el backend y el frontend de la aplicación usando contenedores aislados pero conectados.
+
+## **Docker compose**
+
+El repositorio ya incluye un archivo `docker-compose.yml` que automatiza todos los pasos anteriores: construye las imágenes, crea la red y levanta ambos contenedores con un solo comando.
+
+Solo necesitas ejecutar esto en la raíz del proyecto:
+
+```bash
+docker compose up -d --build
+```
+
+- `up` levanta los servicios definidos en el archivo `docker-compose.yml`.
+- `d` ejecuta todo en segundo plano (modo detached), igual que con `docker run`.
+- `-build` fuerza la reconstrucción de las imágenes antes de iniciar los contenedores, asegurando que cualquier cambio en el código se refleje.
+
+Después, abre [http://localhost:8080](http://localhost:8080/) y verás el blog funcionando.
+
+Cuando quieras detener y eliminar los contenedores junto con la red, usa:
+
+```bash
+docker compose down
+```
+
+Así mantienes limpio tu entorno sin esfuerzo manual.
