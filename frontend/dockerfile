@@ -1,0 +1,4 @@
+FROM nginx:stable-alpine
+
+# Path: Donde va a residir el archivo
+COPY /site /usr/share/nginx/html

@@ -1,0 +1,98 @@
+/* styles.css — estilos kawaii para el blog de gatitos */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Quicksand', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Estilos para el contenido markdown renderizado */
+#blog-content-md h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #db2777;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    border-left: 6px solid #f9a8d4;
+    padding-left: 1rem;
+}
+
+#blog-content-md h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #be185d;
+    margin-top: 1.2rem;
+    margin-bottom: 0.8rem;
+}
+
+#blog-content-md p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+    color: #374151;
+}
+
+#blog-content-md a {
+    color: #ec4899;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+#blog-content-md a:hover {
+    color: #be185d;
+}
+
+#blog-content-md ul, #blog-content-md ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+#blog-content-md li {
+    margin-bottom: 0.3rem;
+}
+
+#blog-content-md blockquote {
+    border-left: 4px solid #f9a8d4;
+    padding-left: 1rem;
+    font-style: italic;
+    color: #6b7280;
+    margin: 1rem 0;
+}
+
+/* Animaciones suaves */
+#blog-content {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Efecto paw print (huellitas) */
+.bg-gradient-to-b {
+    background-attachment: fixed;
+}
+
+/* Scrollbar kawaii */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #fce7f3;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #f9a8d4;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #f472b6;
+}
