@@ -1,12 +1,12 @@
 services:
-  back:
+  backend:
     build: ./backend
     image: backend:latest
     container_name: back
     networks:
       - red-gatos
 
-  web:
+  frontend:
     build: ./frontend
     image: website:latest
     container_name: web
@@ -15,7 +15,7 @@ services:
     networks:
       - red-gatos
     depends_on:
-      - back
+      - backend
 
 networks:
   red-gatos:
