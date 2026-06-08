@@ -1,6 +1,8 @@
 services:
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: jenkins
     user: root
     ports:
@@ -9,15 +11,6 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - DOCKER_HOST=unix:///var/run/docker.sock
-    command: >
-      bash -c "apt-get update &&
-               apt-get install -y docker.io curl &&
-               curl -L https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64
-               -o /usr/local/bin/docker-compose &&
-               chmod +x /usr/local/bin/docker-compose &&
-               /usr/local/bin/jenkins.sh"
     restart: unless-stopped
 
 volumes:
