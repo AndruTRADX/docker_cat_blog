@@ -13,10 +13,17 @@ pipeline {
             }
         }
 
+        stage('Limpieza previa') {
+            steps {
+                echo 'Bajando contenedores anteriores si existen...'
+                sh 'docker-compose down --remove-orphans || true'
+            }
+        }
+
         stage('Construir imágenes') {
             steps {
                 echo 'Construyendo imágenes Docker...'
-                sh 'docker-compose build'
+                sh 'docker-compose build --no-cache'
             }
         }
 
@@ -44,9 +51,12 @@ pipeline {
             echo '✅ Pipeline ejecutado exitosamente. Blog corriendo en puerto 8080.'
         }
         failure {
-            echo '❌ Pipeline falló. Revisando logs...'
-            sh 'docker-compose logs'
-            sh 'docker-compose down'
+            echo '❌ Pipeline falló. Bajando contenedores...'
+            sh 'docker-compose logs || true'
+            sh 'docker-compose down || true'
+        }
+        always {
+            echo 'Pipeline finalizado.'
         }
     }
 }
