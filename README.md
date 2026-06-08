@@ -51,20 +51,9 @@ Abre [http://localhost:8080](http://localhost:8080).
 
 ---
 
-## Integración Continua con Jenkins 🔧
+## Integración Continua con Jenkins
 
 Este proyecto incluye un pipeline de CI con Jenkins que automatiza el build, despliegue y verificación de la aplicación en cada cambio.
-
-### Estructura de archivos Jenkins
-
-```text
-docker_cat_blog/
-├── jenkins/
-│   ├── Dockerfile                  # Imagen de Jenkins con Docker CLI incluido
-│   └── docker-compose.jenkins.yml  # Servicio de Jenkins
-├── Jenkinsfile                     # Definición del pipeline CI
-└── docker-compose.yml
-```
 
 ### Paso 1 — Levantar Jenkins
 
@@ -108,11 +97,11 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 Haz clic en **"Build Now"**. El pipeline correrá los siguientes stages:
 
 ```text
-✅ Clonar repositorio   → clona el código desde GitHub
-✅ Limpieza previa      → baja contenedores anteriores si existen
-✅ Construir imágenes   → ejecuta docker-compose build
-✅ Levantar contenedores → ejecuta docker-compose up -d
-✅ Verificar servicios  → confirma que nginx responde correctamente
+Clonar repositorio   → clona el código desde GitHub
+Limpieza previa      → baja contenedores anteriores si existen
+Construir imágenes   → ejecuta docker-compose build
+Levantar contenedores → ejecuta docker-compose up -d
+Verificar servicios  → confirma que nginx responde correctamente
 ```
 
 Si todos los stages están en verde, el blog estará corriendo en [http://localhost:8080](http://localhost:8080).
