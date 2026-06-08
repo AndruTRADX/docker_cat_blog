@@ -33,7 +33,7 @@ pipeline {
                 sh 'docker-compose ps'
                 sh '''
                     sleep 5
-                    curl -f http://localhost:8080 || exit 1
+                    docker exec web curl -f http://localhost:80 || exit 1
                 '''
             }
         }
