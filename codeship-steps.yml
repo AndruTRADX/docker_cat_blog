@@ -1,0 +1,11 @@
+- name: run_tests
+  service: test_runner
+  command: sh -c "pip install pytest --quiet && pytest tests/ -v"
+
+- name: build_check_backend
+  service: back
+  command: echo "Backend image construida correctamente"
+
+- name: build_check_frontend
+  service: web
+  command: echo "Frontend image construida correctamente"

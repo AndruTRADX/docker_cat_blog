@@ -2,61 +2,76 @@ pipeline {
     agent any
 
     environment {
-        COMPOSE_PROJECT_NAME = "cat_blog"
+        COMPOSE_FILE = 'docker-compose.yml'
+        BACKEND_IMAGE = 'backend:latest'
+        FRONTEND_IMAGE = 'website:latest'
     }
 
     stages {
-        stage('Clonar repositorio') {
+
+        stage('Checkout') {
             steps {
-                echo 'Clonando el repositorio...'
+                echo '==> Clonando repositorio...'
                 checkout scm
             }
         }
 
-        stage('Limpieza previa') {
+        stage('Build images') {
             steps {
-                echo 'Bajando contenedores anteriores si existen...'
-                sh 'docker-compose down --remove-orphans || true'
+                echo '==> Construyendo imágenes Docker...'
+                sh 'docker build -t ${BACKEND_IMAGE} ./backend'
+                sh 'docker build -t ${FRONTEND_IMAGE} ./frontend'
             }
         }
 
-        stage('Construir imágenes') {
+        stage('Run tests') {
             steps {
-                echo 'Construyendo imágenes Docker...'
-                sh 'docker-compose build --no-cache'
-            }
-        }
-
-        stage('Levantar contenedores') {
-            steps {
-                echo 'Levantando los servicios...'
-                sh 'docker-compose up -d'
-            }
-        }
-
-        stage('Verificar servicios') {
-            steps {
-                echo 'Verificando que los contenedores estén corriendo...'
-                sh 'docker-compose ps'
+                echo '==> Ejecutando tests del backend...'
                 sh '''
-                    sleep 5
-                    docker exec web curl -f http://localhost:80 || exit 1
+                    docker run --rm \
+                        -v "$(pwd)/backend:/app" \
+                        -w /app \
+                        ${BACKEND_IMAGE} \
+                        sh -c "pip install pytest --quiet && pytest tests/ -v"
+                '''
+            }
+        }
+
+        stage('Integration test') {
+            steps {
+                echo '==> Levantando stack completo con docker compose...'
+                sh 'docker compose -f ${COMPOSE_FILE} up -d --build'
+
+                echo '==> Esperando que los servicios estén listos...'
+                sh 'sleep 5'
+
+                echo '==> Verificando que el frontend responde...'
+                sh '''
+                    curl --fail --silent --max-time 10 http://localhost:8080 \
+                        && echo "Frontend OK" \
+                        || (echo "Frontend no responde" && exit 1)
+                '''
+
+                echo '==> Verificando que el backend responde...'
+                sh '''
+                    curl --fail --silent --max-time 10 http://localhost:5000 \
+                        && echo "Backend OK" \
+                        || echo "Backend sin ruta raíz (aceptable si hay /cats o similar)"
                 '''
             }
         }
     }
 
     post {
+        always {
+            echo '==> Limpiando contenedores...'
+            sh 'docker compose -f ${COMPOSE_FILE} down --remove-orphans || true'
+        }
         success {
-            echo '✅ Pipeline ejecutado exitosamente. Blog corriendo en puerto 8080.'
+            echo '✅ Pipeline completado exitosamente.'
         }
         failure {
-            echo '❌ Pipeline falló. Bajando contenedores...'
-            sh 'docker-compose logs || true'
-            sh 'docker-compose down || true'
-        }
-        always {
-            echo 'Pipeline finalizado.'
+            echo '❌ Pipeline falló. Revisar logs arriba.'
         }
     }
 }

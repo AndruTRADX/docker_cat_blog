@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+
+  back:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: backend:latest
+    environment:
+      - CI=true
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: website:latest
+    links:
+      - back
+    environment:
+      - CI=true
+
+  test_runner:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - back
+    environment:
+      - CI=true

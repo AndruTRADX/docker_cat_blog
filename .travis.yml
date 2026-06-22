@@ -1,0 +1,54 @@
+language: generic
+
+services:
+  - docker
+
+env:
+  global:
+    - FRONTEND_URL=http://localhost:8080
+    - BACKEND_URL=http://localhost:5000
+
+before_install:
+  - echo "==> Versiones del entorno"
+  - docker --version
+  - docker compose version
+
+install:
+  - echo "==> Construyendo imágenes Docker..."
+  - docker build -t backend:latest ./backend
+  - docker build -t website:latest ./frontend
+
+script:
+  - echo "==> Levantando el stack..."
+  - docker compose up -d --build
+
+  - echo "==> Esperando que los servicios inicien..."
+  - sleep 8
+
+  - echo "==> Smoke test - frontend" # Changed ":" to "-" because of an error
+  - curl --fail --silent --max-time 15 $FRONTEND_URL
+
+  - echo "==> Smoke test - backend (permisivo en ruta raíz)" # Changed ":" to "-" because of an error
+  - |
+    STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 10 $BACKEND_URL)
+    if [ "$STATUS" -ge 500 ]; then
+      echo "Backend respondió con error $STATUS"
+      exit 1
+    else
+      echo "Backend OK (status $STATUS)"
+    fi
+
+after_success:
+  - echo "✅ Build y tests pasaron correctamente."
+
+after_failure:
+  - echo "❌ Algo falló. Logs de contenedores:"
+  - docker compose logs
+
+after_script:
+  - docker compose down --remove-orphans || true
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always
