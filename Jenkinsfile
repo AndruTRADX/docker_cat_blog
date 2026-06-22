@@ -26,17 +26,22 @@ pipeline {
 
         stage('Run tests') {
             steps {
-                echo '==> Ejecutando pruebas de forma segura con Docker CP...'
+                echo '==> Configurando entorno de pruebas con acceso a Docker...'
                 sh '''
                 docker rm -f backend-tester || true
                 
-                docker create --name backend-tester -w /app python:3.11-slim sleep 300
+                docker create --name backend-tester -v /var/run/docker.sock:/var/run/docker.sock -w /app python:3.11-slim sleep 300
                 
                 docker cp backend/. backend-tester:/app
                 
                 docker start backend-tester
                 
-                docker exec backend-tester sh -c "pip install --no-cache-dir -r requirements.txt pytest --quiet && python -m pytest tests/ -v"
+                docker exec backend-tester apt-get update
+                docker exec backend-tester apt-get install -y --no-install-recommends docker.io
+                
+                docker exec backend-tester pip install --no-cache-dir -r requirements.txt pytest --quiet
+                
+                docker exec backend-tester python -m pytest tests/ -v
                 
                 docker rm -f backend-tester
                 '''
