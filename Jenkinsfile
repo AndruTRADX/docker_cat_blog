@@ -78,7 +78,7 @@ pipeline {
         always {
             echo '==> Limpiando contenedores...'
             sh "docker-compose -f ${COMPOSE_FILE} down --remove-orphans || true"
-            sh 'docker rm -f backend-tester || true'
+            sh 'docker rm -f back web backend-tester || true'
         }
         success {
             echo '✅ Pipeline completado exitosamente.'
