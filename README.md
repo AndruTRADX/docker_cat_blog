@@ -270,6 +270,14 @@ Cada pipeline:
 
 ---
 
+### Jenkins - orquestación de test
+
+**Problema:** fué difícil crear el archivo de orquestación `jenkins\docker-compose.jenkins.yml`.  
+**Causa:** La inclusión de distroless en el proyecto, a pesar de que ayudó a reducir el tamaño de la imagen, carecía de varias herramientas básicas para la orquestación de los test.  
+**Solución:** Descargar las herramientas o usar comandos alternativos para ciertas tareas.
+
+---
+
 ## Opiniones sobre las herramientas
 
 ### Jenkins
