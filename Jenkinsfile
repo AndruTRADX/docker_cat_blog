@@ -19,31 +19,22 @@ pipeline {
         stage('Build images') {
             steps {
                 echo '==> Construyendo imágenes Docker...'
-                sh 'docker build -t ${BACKEND_IMAGE} ./backend'
-                sh 'docker build -t ${FRONTEND_IMAGE} ./frontend'
+                sh "docker build -t ${BACKEND_IMAGE} ./backend"
+                sh "docker build -t ${FRONTEND_IMAGE} ./frontend"
             }
         }
 
         stage('Run tests') {
             steps {
-                echo '==> Configurando entorno de pruebas con acceso a Docker...'
+                echo '==> Ejecutando pruebas...'
                 sh '''
-                docker rm -f backend-tester || true
-                
-                docker create --name backend-tester -v /var/run/docker.sock:/var/run/docker.sock -w /app python:3.11-slim sleep 300
-                
-                docker cp backend/. backend-tester:/app
-                
-                docker start backend-tester
-                
-                docker exec backend-tester apt-get update
-                docker exec backend-tester apt-get install -y --no-install-recommends docker.io
-                
-                docker exec backend-tester pip install --no-cache-dir -r requirements.txt pytest --quiet
-                
-                docker exec backend-tester python -m pytest tests/ -v
-                
-                docker rm -f backend-tester
+                    docker rm -f backend-tester || true
+
+                    docker run --rm \
+                        -v "$(pwd)/backend:/app" \
+                        -w /app \
+                        python:3.11-slim \
+                        sh -c "pip install --no-cache-dir -r requirements.txt pytest --quiet && python -m pytest tests/ -v"
                 '''
             }
         }
@@ -51,23 +42,23 @@ pipeline {
         stage('Integration test') {
             steps {
                 echo '==> Levantando stack completo con docker compose...'
-                sh 'docker-compose -f ${COMPOSE_FILE} up -d --build'
+                sh "docker-compose -f ${COMPOSE_FILE} up -d --build"
 
                 echo '==> Esperando que los servicios estén listos...'
-                sh 'sleep 5'
+                sh 'sleep 10'
 
                 echo '==> Verificando que el frontend responde...'
                 sh '''
                     curl --fail --silent --max-time 10 http://localhost:8080 \
-                        && echo "Frontend OK" \
-                        || (echo "Frontend no responde" && exit 1)
+                        && echo "✅ Frontend OK" \
+                        || (echo "❌ Frontend no responde" && exit 1)
                 '''
 
                 echo '==> Verificando que el backend responde...'
                 sh '''
-                    curl --fail --silent --max-time 10 http://localhost:5000 \
-                        && echo "Backend OK" \
-                        || echo "Backend sin ruta raíz (aceptable si hay /cats o similar)"
+                    curl --fail --silent --max-time 10 http://localhost:5000/cats \
+                        && echo "✅ Backend OK" \
+                        || (echo "❌ Backend no responde" && exit 1)
                 '''
             }
         }
@@ -76,7 +67,8 @@ pipeline {
     post {
         always {
             echo '==> Limpiando contenedores...'
-            sh 'docker-compose -f ${COMPOSE_FILE} down --remove-orphans || true'
+            sh "docker-compose -f ${COMPOSE_FILE} down --remove-orphans || true"
+            sh 'docker rm -f backend-tester || true'
         }
         success {
             echo '✅ Pipeline completado exitosamente.'
