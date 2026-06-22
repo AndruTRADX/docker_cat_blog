@@ -170,23 +170,6 @@ Codeship Pro usa los archivos `codeship-services.yml` y `codeship-steps.yml` de 
 
 > Los archivos `codeship-services.yml` y `codeship-steps.yml` ya están en el repositorio.
 
-#### ⚠️ Paso previo obligatorio — Renombrar los Dockerfiles
-
-Los Dockerfiles del proyecto están nombrados en minúscula (`dockerfile`) pero `codeship-services.yml` los referencia como `Dockerfile` (D mayúscula). En Linux —donde corre Codeship— el sistema de archivos distingue mayúsculas, por lo que el build fallará si no se corrige esto.
-
-Ejecuta desde la raíz del proyecto:
-
-```bash
-# Renombrar los archivos
-mv backend/dockerfile backend/Dockerfile
-mv frontend/dockerfile frontend/Dockerfile
-
-# Registrar el cambio en git
-git add backend/Dockerfile frontend/Dockerfile
-git commit -m "fix: rename dockerfile -> Dockerfile for Linux CI compatibility"
-git push
-```
-
 #### Conectar el proyecto en Codeship
 
 1. Ve a [https://app.codeship.com](https://app.codeship.com) y crea una cuenta o inicia sesión
