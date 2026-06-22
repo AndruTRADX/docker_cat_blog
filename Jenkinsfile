@@ -27,8 +27,9 @@ pipeline {
         stage('Run tests') {
             steps {
                 echo '==> Ejecutando pruebas...'
+                // Montamos la raíz del proyecto ($pwd) en /app
                 sh '''
-                docker run --rm -v "$(pwd)/backend:/app" -w /app python:3.11-slim /bin/bash -c "pip install -r requirements.txt pytest --quiet && python -m pytest tests/ -v"
+                docker run --rm -v "$(pwd):/app" -w /app python:3.11-slim /bin/bash -c "pip install -r requirements.txt pytest --quiet && cd backend && python -m pytest tests/ -v"
                 '''
             }
         }
