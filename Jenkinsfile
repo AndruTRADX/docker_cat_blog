@@ -30,11 +30,13 @@ pipeline {
                 sh '''
                     docker rm -f backend-tester || true
 
+                    BACKEND_PATH=$(pwd)/backend
+
                     docker run --rm \
-                        -v $(pwd)/backend:/app \
+                        -v ${BACKEND_PATH}:/app \
                         -w /app \
                         python:3.11-slim \
-                        bash -c 'pip install --no-cache-dir -r requirements.txt pytest && python -m pytest tests/ -v'
+                        sh /app/run_tests.sh
                 '''
             }
         }
