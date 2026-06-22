@@ -47,6 +47,10 @@ pipeline {
 
         stage('Integration test') {
             steps {
+                echo '==> Limpiando contenedores previos...'
+                sh 'docker rm -f back web || true'
+                sh "docker-compose -f ${COMPOSE_FILE} down --remove-orphans || true"
+
                 echo '==> Levantando stack completo con docker compose...'
                 sh "docker-compose -f ${COMPOSE_FILE} up -d --build"
 
@@ -56,15 +60,15 @@ pipeline {
                 echo '==> Verificando que el frontend responde...'
                 sh '''
                     curl --fail --silent --max-time 10 http://localhost:8080 \
-                        && echo "✅ Frontend OK" \
-                        || (echo "❌ Frontend no responde" && exit 1)
+                        && echo "Frontend OK" \
+                        || (echo "Frontend no responde" && exit 1)
                 '''
 
                 echo '==> Verificando que el backend responde...'
                 sh '''
                     curl --fail --silent --max-time 10 http://localhost:5000/cats \
-                        && echo "✅ Backend OK" \
-                        || (echo "❌ Backend no responde" && exit 1)
+                        && echo "Backend OK" \
+                        || (echo "Backend no responde" && exit 1)
                 '''
             }
         }
