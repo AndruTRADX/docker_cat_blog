@@ -67,8 +67,7 @@ pipeline {
 
                 echo '==> Verificando que el backend responde...'
                 sh '''
-                    HOST_IP=$(ip route | awk '/default/ {print $3}')
-                    curl --fail --silent --max-time 10 http://${HOST_IP}:5000/cats \
+                    docker exec back wget -q -O- http://localhost:5000/cats \
                         && echo "Backend OK" \
                         || (echo "Backend no responde" && exit 1)
                 '''
