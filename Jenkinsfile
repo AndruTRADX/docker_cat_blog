@@ -68,7 +68,7 @@ pipeline {
                 echo '==> Verificando que el backend responde...'
                 sh '''
                     HOST_IP=$(ip route | awk '/default/ {print $3}')
-                    curl --fail --silent --max-time 10 http://${HOST_IP}:5000/cats \
+                    curl --fail --silent --max-time 10 http://${HOST_IP}:5000/getCatsInfo \
                         && echo "Backend OK" \
                         || (echo "Backend no responde" && exit 1)
                 '''

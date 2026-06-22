@@ -18,13 +18,13 @@ def test_backend_builds():
 def test_backend_starts_and_responds():
     """Levanta el contenedor del backend y verifica que responde en /."""
     subprocess.run(
-        ["docker", "run", "-d", "--rm", "--name", "back_test", "-p", "5001:5000", "backend:test"],
+        ["docker", "run", "-d", "--rm", "--name", "back_test", "-p", "5000:5000", "backend:test"],
         check=True,
     )
     time.sleep(3)
 
     try:
-        with urllib.request.urlopen("http://localhost:5001", timeout=5) as resp:
+        with urllib.request.urlopen("http://localhost:5000", timeout=5) as resp:
             assert resp.status == 200, f"Se esperaba 200, se obtuvo {resp.status}"
     except urllib.error.HTTPError as e:
         # 4xx también significa que el server está vivo
