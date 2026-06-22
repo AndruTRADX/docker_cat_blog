@@ -59,14 +59,16 @@ pipeline {
 
                 echo '==> Verificando que el frontend responde...'
                 sh '''
-                    curl --fail --silent --max-time 10 http://localhost:8080 \
+                    HOST_IP=$(ip route | awk '/default/ {print $3}')
+                    curl --fail --silent --max-time 10 http://${HOST_IP}:8080 \
                         && echo "Frontend OK" \
                         || (echo "Frontend no responde" && exit 1)
                 '''
 
                 echo '==> Verificando que el backend responde...'
                 sh '''
-                    curl --fail --silent --max-time 10 http://localhost:5000/cats \
+                    HOST_IP=$(ip route | awk '/default/ {print $3}')
+                    curl --fail --silent --max-time 10 http://${HOST_IP}:5000/cats \
                         && echo "Backend OK" \
                         || (echo "Backend no responde" && exit 1)
                 '''
