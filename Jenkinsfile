@@ -34,7 +34,7 @@ pipeline {
                         -v "$(pwd)/backend:/app" \
                         -w /app \
                         python:3.11-slim \
-                        sh -c "pip install --no-cache-dir -r requirements.txt pytest --quiet && python -m pytest tests/ -v"
+                        sh -c "pip install --no-cache-dir -r requirements.txt && pip install pytest --quiet && python -m pytest tests/ -v"
                 '''
             }
         }
