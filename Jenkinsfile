@@ -28,10 +28,10 @@ pipeline {
             steps {
                 echo '==> Ejecutando tests del backend...'
                 sh '''
-                    docker run --rm \
-                        -v "$(pwd)/backend:/app" \
-                        -w /app \
-                        ${BACKEND_IMAGE} \
+                    docker run --rm \\
+                        -v "$(pwd)/backend:/app" \\
+                        -w /app \\
+                        ${BACKEND_IMAGE} \\
                         sh -c "pip install pytest --quiet && pytest tests/ -v"
                 '''
             }
