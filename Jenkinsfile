@@ -31,10 +31,10 @@ pipeline {
                     docker rm -f backend-tester || true
 
                     docker run --rm \
-                        -v "$(pwd)/backend:/app" \
+                        -v $(pwd)/backend:/app \
                         -w /app \
                         python:3.11-slim \
-                        sh -c "pip install --no-cache-dir -r requirements.txt && pip install pytest --quiet && python -m pytest tests/ -v"
+                        bash -c 'pip install --no-cache-dir -r requirements.txt pytest && python -m pytest tests/ -v'
                 '''
             }
         }
