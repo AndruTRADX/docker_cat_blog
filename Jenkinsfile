@@ -47,32 +47,42 @@ pipeline {
 
         stage('Integration test') {
             steps {
-                echo '==> Liberando puerto 5000 si está ocupado...'
+                echo '==> Liberando puertos 5000 y 8080...'
                 sh '''
-                    # Detener y eliminar cualquier contenedor que use el puerto 5000
                     docker ps -q --filter "publish=5000" | xargs -r docker stop || true
                     docker ps -q --filter "publish=5000" | xargs -r docker rm -f || true
+                    docker ps -q --filter "publish=8080" | xargs -r docker stop || true
+                    docker ps -q --filter "publish=8080" | xargs -r docker rm -f || true
                 '''
 
-                echo '==> Limpiando contenedores previos del proyecto...'
+                echo '==> Limpiando contenedores previos...'
                 sh "docker-compose -f ${COMPOSE_FILE} down --remove-orphans || true"
 
-                echo '==> Levantando stack completo con docker compose...'
+                echo '==> Levantando stack...'
                 sh "docker-compose -f ${COMPOSE_FILE} up -d --build"
 
                 echo '==> Esperando que los servicios estén listos...'
-                sh 'sleep 10'
+                sh 'sleep 15'
 
-                echo '==> Verificando que el frontend responde...'
+                // Obtener la IP del host (gateway de Docker)
+                echo '==> Obteniendo IP del host...'
                 sh '''
-                    curl --fail --silent --max-time 10 http://localhost:8080 \
+                    HOST_IP=$(docker network inspect bridge -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}')
+                    echo "Host IP: $HOST_IP"
+                '''
+
+                echo '==> Verificando frontend vía host IP...'
+                sh '''
+                    HOST_IP=$(docker network inspect bridge -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}')
+                    curl --fail --silent --max-time 10 http://${HOST_IP}:8080 \
                         && echo "Frontend OK" \
                         || (echo "Frontend no responde" && exit 1)
                 '''
 
-                echo '==> Verificando que el backend responde...'
+                echo '==> Verificando backend...'
                 sh '''
-                    curl --fail --silent --max-time 10 http://localhost:5000/getCatsInfo \
+                    HOST_IP=$(docker network inspect bridge -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}')
+                    curl --fail --silent --max-time 10 http://${HOST_IP}:5000/getCatsInfo \
                         && echo "Backend OK" \
                         || (echo "Backend no responde" && exit 1)
                 '''
