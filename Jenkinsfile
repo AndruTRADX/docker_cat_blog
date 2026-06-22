@@ -47,8 +47,14 @@ pipeline {
 
         stage('Integration test') {
             steps {
-                echo '==> Limpiando contenedores previos...'
-                sh 'docker rm -f back web || true'
+                echo '==> Liberando puerto 5000 si está ocupado...'
+                sh '''
+                    # Detener y eliminar cualquier contenedor que use el puerto 5000
+                    docker ps -q --filter "publish=5000" | xargs -r docker stop || true
+                    docker ps -q --filter "publish=5000" | xargs -r docker rm -f || true
+                '''
+
+                echo '==> Limpiando contenedores previos del proyecto...'
                 sh "docker-compose -f ${COMPOSE_FILE} down --remove-orphans || true"
 
                 echo '==> Levantando stack completo con docker compose...'
@@ -59,16 +65,14 @@ pipeline {
 
                 echo '==> Verificando que el frontend responde...'
                 sh '''
-                    HOST_IP=$(ip route | awk '/default/ {print $3}')
-                    curl --fail --silent --max-time 10 http://${HOST_IP}:8080 \
+                    curl --fail --silent --max-time 10 http://localhost:8080 \
                         && echo "Frontend OK" \
                         || (echo "Frontend no responde" && exit 1)
                 '''
 
                 echo '==> Verificando que el backend responde...'
                 sh '''
-                    HOST_IP=$(ip route | awk '/default/ {print $3}')
-                    curl --fail --silent --max-time 10 http://${HOST_IP}:5000/getCatsInfo \
+                    curl --fail --silent --max-time 10 http://localhost:5000/getCatsInfo \
                         && echo "Backend OK" \
                         || (echo "Backend no responde" && exit 1)
                 '''
