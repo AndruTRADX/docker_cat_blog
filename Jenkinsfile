@@ -26,14 +26,10 @@ pipeline {
 
         stage('Run tests') {
             steps {
-                echo '==> Ejecutando tests del backend...'
-                sh '''
-                    docker run --rm \\
-                        -v "$(pwd)/backend:/app" \\
-                        -w /app \\
-                        ${BACKEND_IMAGE} \\
-                        sh -c "pip install pytest --quiet && pytest tests/ -v"
-                '''
+                echo '==> Instalando pytest en el contenedor...'
+                sh 'docker run --rm -v "$(pwd)/backend:/app" -w /app ${BACKEND_IMAGE} python -m pip install pytest --quiet'
+                echo '==> Ejecutando pruebas...'
+                sh 'docker run --rm -v "$(pwd)/backend:/app" -w /app ${BACKEND_IMAGE} python -m pytest tests/ -v'
             }
         }
 
