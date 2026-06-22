@@ -26,10 +26,19 @@ pipeline {
 
         stage('Run tests') {
             steps {
-                echo '==> Ejecutando pruebas...'
-                // Montamos la raíz del proyecto ($pwd) en /app
+                echo '==> Ejecutando pruebas de forma segura con Docker CP...'
                 sh '''
-                docker run --rm -v "$(pwd):/app" -w /app python:3.11-slim /bin/bash -c "pip install -r requirements.txt pytest --quiet && cd backend && python -m pytest tests/ -v"
+                docker rm -f backend-tester || true
+                
+                docker create --name backend-tester -w /app python:3.11-slim sleep 300
+                
+                docker cp backend/. backend-tester:/app
+                
+                docker start backend-tester
+                
+                docker exec backend-tester sh -c "pip install --no-cache-dir -r requirements.txt pytest --quiet && python -m pytest tests/ -v"
+                
+                docker rm -f backend-tester
                 '''
             }
         }
