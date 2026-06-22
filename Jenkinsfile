@@ -40,7 +40,7 @@ pipeline {
         stage('Integration test') {
             steps {
                 echo '==> Levantando stack completo con docker compose...'
-                sh 'docker compose -f ${COMPOSE_FILE} up -d --build'
+                sh 'docker-compose -f ${COMPOSE_FILE} up -d --build'
 
                 echo '==> Esperando que los servicios estén listos...'
                 sh 'sleep 5'
@@ -65,7 +65,7 @@ pipeline {
     post {
         always {
             echo '==> Limpiando contenedores...'
-            sh 'docker compose -f ${COMPOSE_FILE} down --remove-orphans || true'
+            sh 'docker-compose -f ${COMPOSE_FILE} down --remove-orphans || true'
         }
         success {
             echo '✅ Pipeline completado exitosamente.'
