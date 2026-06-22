@@ -28,15 +28,19 @@ pipeline {
             steps {
                 echo '==> Ejecutando pruebas...'
                 sh '''
+                    cat > /tmp/run_tests.sh << 'EOF'
+        pip install --no-cache-dir -r requirements.txt pytest
+        python -m pytest tests/ -v
+        EOF
+
                     docker rm -f backend-tester || true
 
-                    BACKEND_PATH=$(pwd)/backend
-
                     docker run --rm \
-                        -v ${BACKEND_PATH}:/app \
+                        -v $(pwd)/backend:/app \
+                        -v /tmp/run_tests.sh:/run_tests.sh \
                         -w /app \
                         python:3.11-slim \
-                        sh /app/run_tests.sh
+                        sh /run_tests.sh
                 '''
             }
         }
